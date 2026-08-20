@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Citizen Feedback Portal — DM & Collector, West Tripura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .header-nav {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+    }
+    .header-nav a {
+      color: var(--accent-gold);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(244, 196, 48, 0.4);
+      transition: background 0.2s;
+    }
+    .header-nav a:hover {
+      background: rgba(244, 196, 48, 0.2);
+    }
+    .pill-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      flex: 1;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--bg-card-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .pill:hover, .pill.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: white;
+    }
+    .stars {
+      display: flex;
+      gap: 12px;
+      font-size: 2.2rem;
+      cursor: pointer;
+      margin: 10px 0;
+      justify-content: center;
+    }
+    .stars span {
+      color: #4b5563;
+      transition: color 0.15s, transform 0.15s;
+    }
+    .stars span.selected, .stars span:hover {
+      color: var(--accent-gold);
+      transform: scale(1.15);
+    }
+    .rating-label {
+      text-align: center;
+      font-weight: 600;
+      min-height: 24px;
+      color: var(--accent-gold);
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header-nav">
+    <a href="login.html">Admin Login 🔒</a>
+  </div>
+
+  <div class="auth-wrapper">
+    <div class="glass-card" style="max-width: 580px;">
+      <h1 style="text-align: center; color: var(--accent-gold); font-family: 'Playfair Display', serif;">District Administration West Tripura</h1>
+      <p class="subtitle" style="text-align: center;">Public Citizen Feedback Portal</p>
+
+      <div id="alertBox" class="alert"></div>
+
+      <div id="formSection">
+        <!-- Step 1: Select Office Level -->
+        <div class="form-group">
+          <label>1. Select Administrative Level</label>
+          <div class="pill-group">
+            <div class="pill" id="pill-DM" onclick="selectOfficeType('DM')">DM Office</div>
+            <div class="pill" id="pill-SDM" onclick="selectOfficeType('SDM')">SDM Office</div>
+            <div class="pill" id="pill-BDO" onclick="selectOfficeType('BDO')">BDO Office</div>
+          </div>
+        </div>
+
+        <!-- Step 2: Select Specific Office -->
+        <div class="form-group">
+          <label for="officeSelect">2. Select Office</label>
+          <select id="officeSelect" onchange="onOfficeSelectChange()" disabled>
+            <option value="">-- First select Administrative Level above --</option>
+          </select>
+        </div>
+
+        <!-- Step 3: Select Service -->
+        <div class="form-group">
+          <label for="serviceSelect">3. Select Service (Optional)</label>
+          <select id="serviceSelect" disabled>
+            <option value="">-- First select an Office above --</option>
+          </select>
+        </div>
+
+        <!-- Step 4: Star Rating -->
+        <div class="form-group">
+          <label style="text-align: center; display: block;">4. Rate Your Experience</label>
+          <div class="stars" id="starContainer">
+            <span onclick="setRating(1)">★</span>
+            <span onclick="setRating(2)">★</span>
+            <span onclick="setRating(3)">★</span>
+            <span onclick="setRating(4)">★</span>
+            <span onclick="setRating(5)">★</span>
+          </div>
+          <div class="rating-label" id="ratingLabel">Tap a star to rate</div>
+        </div>
+
+        <!-- Step 5: Remarks -->
+        <div class="form-group">
+          <label for="feedbackText">5. Feedback / Suggestions (Optional)</label>
+          <textarea id="feedbackText" rows="3" placeholder="Share your experience or suggestion..."></textarea>
+        </div>
+
+        <!-- Step 6: Mobile (Optional) -->
+        <div class="form-group">
+          <label for="mobile">6. Mobile Number (Optional)</label>
+          <input type="tel" id="mobile" maxlength="10" placeholder="10-digit mobile number" />
+        </div>
+
+        <button type="button" id="submitBtn" onclick="submitFeedback()" class="btn" style="margin-top: 10px;">Submit Feedback</button>
+      </div>
+
+      <!-- Success Screen -->
+      <div id="successSection" class="hidden" style="text-align: center; padding: 20px 0;">
+        <div style="font-size: 3.5rem; color: var(--accent-green); margin-bottom: 10px;">✓</div>
+        <h2>Thank You!</h2>
+        <p class="subtitle">Your feedback has been submitted successfully and recorded for quality improvement.</p>
+        <button class="btn btn-secondary" onclick="resetForm()">Submit Another Response</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const OFFICE_DATA = {
+      "DM": [
+        {
+          name: "DM Office",
+          services: [
+            "Certificate of Land Use", "Cinematograph License", "NOC for Explosives",
+            "License for Sale of Crackers", "NOC for Petroleum / Diesel / Naphtha",
+            "Arms Licence (NDAL-ALIS)", "RTI Online", "Character Verification",
+            "Small Savings Agent License", "Grievance Redressal", "Revenue and Land Records",
+            "Disaster Management and Relief", "Election Services", "Law and Order", "Others"
+          ]
+        }
+      ],
+      "SDM": [
+        { name: "SDM Office - Sadar", services: ["PRTC", "Income Certificate", "Caste Certificate", "Marriage Registration", "Sub-Division Grievances", "Others"] },
+        { name: "SDM Office - Mohanpur", services: ["PRTC", "Income Certificate", "Caste Certificate", "Marriage Registration", "Sub-Division Grievances", "Others"] },
+        { name: "SDM Office - Jirania", services: ["PRTC", "Income Certificate", "Caste Certificate", "Marriage Registration", "Sub-Division Grievances", "Others"] }
+      ],
+      "BDO": [
+        { name: "BDO Office - Dukli", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Mohanpur", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Bamutia", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Hezamara", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Lefunga", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Jirania", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Mandai", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Belbari", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] },
+        { name: "BDO Office - Old Agartala", services: ["MGNREGA Works", "PMAY-G Housing", "Social Pensions", "Rural Development", "Block Grievances", "Others"] }
+      ]
+    };
+
+    const RATING_LABELS = ["", "Poor / খারাপ", "Fair / মোটামুটি", "Good / ভালো", "Very Good / খুব ভালো", "Excellent / চমৎকার"];
+
+    let selectedOfficeType = "";
+    let selectedRating = 0;
+
+    function selectOfficeType(type) {
+      selectedOfficeType = type;
+      document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+      document.getElementById("pill-" + type).classList.add("active");
+
+      const oSelect = document.getElementById("officeSelect");
+      oSelect.innerHTML = '<option value="">-- Select ' + type + ' Office --</option>';
+      oSelect.disabled = false;
+
+      const offices = OFFICE_DATA[type] || [];
+      offices.forEach(o => {
+        const opt = document.createElement("option");
+        opt.value = o.name;
+        opt.textContent = o.name;
+        oSelect.appendChild(opt);
+      });
+
+      if (offices.length === 1) {
+        oSelect.value = offices[0].name;
+        onOfficeSelectChange();
+      } else {
+        resetServiceSelect();
+      }
+    }
+
+    function onOfficeSelectChange() {
+      const officeName = document.getElementById("officeSelect").value;
+      const sSelect = document.getElementById("serviceSelect");
+      
+      if (!officeName) {
+        resetServiceSelect();
+        return;
+      }
+
+      sSelect.innerHTML = '<option value="">-- Select Service --</option>';
+      sSelect.disabled = false;
+
+      let services = ["Others"];
+      const list = OFFICE_DATA[selectedOfficeType] || [];
+      const match = list.find(o => o.name === officeName);
+      if (match && match.services) services = match.services;
+
+      services.forEach(s => {
+        const opt = document.createElement("option");
+        opt.value = s;
+        opt.textContent = s;
+        sSelect.appendChild(opt);
+      });
+    }
+
+    function resetServiceSelect() {
+      const sSelect = document.getElementById("serviceSelect");
+      sSelect.innerHTML = '<option value="">-- First select an Office above --</option>';
+      sSelect.disabled = true;
+    }
+
+    function setRating(val) {
+      selectedRating = val;
+      const stars = document.querySelectorAll("#starContainer span");
+      stars.forEach((s, idx) => {
+        if (idx < val) s.classList.add("selected");
+        else s.classList.remove("selected");
+      });
+      document.getElementById("ratingLabel").textContent = RATING_LABELS[val] || "";
+    }
+
+    async function submitFeedback() {
+      const alertBox = document.getElementById("alertBox");
+      alertBox.style.display = "none";
+
+      const office = document.getElementById("officeSelect").value;
+      const service = document.getElementById("serviceSelect").value || "Others";
+      const feedback = document.getElementById("feedbackText").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+
+      if (!selectedOfficeType || !office) {
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = "Please select the office level and specific office.";
+        return;
+      }
+
+      if (!selectedRating) {
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = "Please select a star rating.";
+        return;
+      }
+
+      if (mobile && !/^[6-9]\d{9}$/.test(mobile)) {
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = "Please enter a valid 10-digit Indian mobile number.";
+        return;
+      }
+
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      const payload = {
+        mobile,
+        office,
+        officeType: selectedOfficeType,
+        service,
+        rating: selectedRating,
+        feedback
+      };
+
+      const res = await apiPost("submitFeedback", { payload });
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Feedback";
+
+      if (res.success) {
+        document.getElementById("formSection").classList.add("hidden");
+        document.getElementById("successSection").classList.remove("hidden");
+      } else {
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = res.error || "Failed to submit feedback. Please try again.";
+      }
+    }
+
+    function resetForm() {
+      selectedOfficeType = "";
+      selectedRating = 0;
+      document.querySelectorAll(".pill").forEach(p => p.classList.remove("active"));
+      document.getElementById("officeSelect").innerHTML = '<option value="">-- First select Administrative Level above --</option>';
+      document.getElementById("officeSelect").disabled = true;
+      resetServiceSelect();
+      setRating(0);
+      document.getElementById("ratingLabel").textContent = "Tap a star to rate";
+      document.getElementById("feedbackText").value = "";
+      document.getElementById("mobile").value = "";
+      document.getElementById("alertBox").style.display = "none";
+      document.getElementById("successSection").classList.add("hidden");
+      document.getElementById("formSection").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>

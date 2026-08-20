@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Login – DM Office West Tripura Feedback Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="glass-card">
+      <h1>Admin Sign In</h1>
+      <p class="subtitle">Enter your official credentials (BDO / SDM / DM)</p>
+
+      <div id="alertBox" class="alert"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Gmail ID / Email</label>
+          <input type="email" id="email" placeholder="e.g. admin@gmail.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" id="submitBtn" class="btn">Sign In</button>
+      </form>
+
+      <div class="auth-links">
+        <a href="reset.html">Forgot password?</a>
+        <a href="index.html">Submit Public Feedback →</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const alertBox = document.getElementById("alertBox");
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (!email || !password) {
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = "Please fill in all fields.";
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Authenticating...";
+      alertBox.style.display = "none";
+
+      const res = await apiPost("login", { email, password });
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sign In";
+
+      if (res.success) {
+        setAuthToken(res.token);
+        saveUserInfo(res.email, res.role, res.office);
+        alertBox.className = "alert alert-success";
+        alertBox.textContent = "Login successful! Redirecting...";
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 800);
+      } else {
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = res.error || "Login failed. Please verify credentials.";
+      }
+    });
+  </script>
+</body>
+</html>

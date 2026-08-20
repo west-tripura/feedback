@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reset Password – Feedback Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="glass-card">
+      <h1>Reset Password</h1>
+      <p class="subtitle" id="stepSubtitle">Step 1: Enter your registered admin email</p>
+
+      <div id="alertBox" class="alert"></div>
+
+      <!-- Step 1: Send OTP -->
+      <form id="step1Form">
+        <div class="form-group">
+          <label for="email">Admin Email</label>
+          <input type="email" id="email" placeholder="admin@gmail.com" required />
+        </div>
+        <button type="submit" id="btnStep1" class="btn">Send OTP Code</button>
+      </form>
+
+      <!-- Step 2: Verify OTP -->
+      <form id="step2Form" class="hidden">
+        <div class="form-group">
+          <label for="otpCode">6-Digit OTP Code</label>
+          <input type="text" id="otpCode" maxlength="6" placeholder="123456" required />
+        </div>
+        <button type="submit" id="btnStep2" class="btn">Verify OTP</button>
+      </form>
+
+      <!-- Step 3: Set New Password -->
+      <form id="step3Form" class="hidden">
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" placeholder="••••••••" required />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+          <input type="password" id="confirmPassword" placeholder="••••••••" required />
+        </div>
+        <button type="submit" id="btnStep3" class="btn">Update Password</button>
+      </form>
+
+      <div class="auth-links">
+        <a href="login.html">← Back to Login</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let userEmail = "";
+
+    function showAlert(msg, isSuccess = false) {
+      const alertBox = document.getElementById("alertBox");
+      alertBox.className = "alert " + (isSuccess ? "alert-success" : "alert-error");
+      alertBox.textContent = msg;
+    }
+
+    function hideAlert() {
+      document.getElementById("alertBox").style.display = "none";
+    }
+
+    // Step 1: Send OTP
+    document.getElementById("step1Form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      hideAlert();
+      userEmail = document.getElementById("email").value.trim();
+      const btn = document.getElementById("btnStep1");
+
+      btn.disabled = true;
+      btn.textContent = "Sending OTP...";
+
+      const res = await apiPost("sendOtp", { email: userEmail });
+      btn.disabled = false;
+      btn.textContent = "Send OTP Code";
+
+      if (res.success) {
+        showAlert("OTP code sent to " + userEmail + ". Valid for 10 minutes.", true);
+        document.getElementById("step1Form").classList.add("hidden");
+        document.getElementById("step2Form").classList.remove("hidden");
+        document.getElementById("stepSubtitle").textContent = "Step 2: Enter the 6-digit OTP code sent to your email";
+      } else {
+        showAlert(res.error || "Failed to send OTP.");
+      }
+    });
+
+    // Step 2: Verify OTP
+    document.getElementById("step2Form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      hideAlert();
+      const code = document.getElementById("otpCode").value.trim();
+      const btn = document.getElementById("btnStep2");
+
+      btn.disabled = true;
+      btn.textContent = "Verifying...";
+
+      const res = await apiPost("verifyOtp", { email: userEmail, code: code });
+      btn.disabled = false;
+      btn.textContent = "Verify OTP";
+
+      if (res.success) {
+        showAlert("OTP verified successfully! Set your new password.", true);
+        document.getElementById("step2Form").classList.add("hidden");
+        document.getElementById("step3Form").classList.remove("hidden");
+        document.getElementById("stepSubtitle").textContent = "Step 3: Enter and confirm your new password";
+      } else {
+        showAlert(res.error || "Invalid OTP code.");
+      }
+    });
+
+    // Step 3: New Password
+    document.getElementById("step3Form").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      hideAlert();
+      const pass = document.getElementById("newPassword").value;
+      const confirm = document.getElementById("confirmPassword").value;
+      const btn = document.getElementById("btnStep3");
+
+      if (pass !== confirm) {
+        showAlert("Passwords do not match.");
+        return;
+      }
+      if (pass.length < 6) {
+        showAlert("Password should be at least 6 characters long.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Updating Password...";
+
+      const res = await apiPost("resetPassword", { email: userEmail, newPassword: pass });
+      btn.disabled = false;
+      btn.textContent = "Update Password";
+
+      if (res.success) {
+        showAlert("Password reset successful! Redirecting to login...", true);
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500);
+      } else {
+        showAlert(res.error || "Failed to update password.");
+      }
+    });
+  </script>
+</body>
+</html>

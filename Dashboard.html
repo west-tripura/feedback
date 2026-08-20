@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard – DM Office West Tripura Feedback Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Header / Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <span>🏛️</span> West Tripura Feedback Dashboard
+    </div>
+    <div class="navbar-user">
+      <span id="userOfficeLabel" style="font-weight: 500;">Loading...</span>
+      <span id="roleBadge" class="badge">ROLE</span>
+      <button id="logoutBtn" class="btn btn-secondary" style="width: auto; padding: 6px 14px; font-size: 0.85rem;">Logout</button>
+    </div>
+  </nav>
+
+  <div class="auth-wrapper" style="align-items: flex-start;">
+    <div class="glass-card wide">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+        <h2>Performance Overview</h2>
+        
+        <div style="display: flex; align-items: center; gap: 10px; min-width: 250px;">
+          <label for="officeFilter" style="white-space: nowrap;">Office Filter:</label>
+          <select id="officeFilter">
+            <option value="All">All Authorized Offices</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="alertBox" class="alert"></div>
+
+      <!-- Stat Cards Grid -->
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <div class="subtitle">Total Submissions</div>
+          <div class="val" id="statTotalCount">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="subtitle">Average Satisfaction</div>
+          <div class="val" id="statAvgRating">0.0 / 5</div>
+        </div>
+        <div class="stat-card">
+          <div class="subtitle">Active Services</div>
+          <div class="val" id="statActiveServices" style="color: var(--accent-blue);">0</div>
+        </div>
+      </div>
+
+      <!-- Services Summary -->
+      <h3 style="margin-top: 30px;">Service Rating Breakdown</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Service Name</th>
+              <th>Avg Rating</th>
+              <th>Submissions</th>
+              <th>Recent Citizen Comments</th>
+            </tr>
+          </thead>
+          <tbody id="summaryTableBody">
+            <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading summary...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Office Breakdown (DM / SDM) -->
+      <div id="officeBreakdownSection" class="hidden">
+        <h3 style="margin-top: 30px;">Office Wise Breakdown</h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Office Name</th>
+                <th>Avg Rating</th>
+                <th>Total Submissions</th>
+              </tr>
+            </thead>
+            <tbody id="officeTableBody">
+              <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Loading breakdown...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Recent Feedbacks -->
+      <h3 style="margin-top: 30px;">Recent Citizen Feedback</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Office</th>
+              <th>Service</th>
+              <th>Rating</th>
+              <th>Feedback</th>
+            </tr>
+          </thead>
+          <tbody id="recentTableBody">
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading recent feedback...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const token = checkAuthOrRedirect();
+    let currentRole = localStorage.getItem("feedback_role") || "";
+    let currentOffice = localStorage.getItem("feedback_office") || "";
+
+    document.getElementById("userOfficeLabel").textContent = currentOffice || "Admin";
+    document.getElementById("roleBadge").textContent = currentRole || "ADMIN";
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      clearAuth();
+      window.location.href = "login.html";
+    });
+
+    async function loadDashboardData() {
+      const officeFilter = document.getElementById("officeFilter").value;
+      const alertBox = document.getElementById("alertBox");
+      alertBox.style.display = "none";
+
+      const res = await apiPost("getDashboardData", { token, officeFilter });
+
+      if (!res.success) {
+        if (res.error && res.error.includes("Unauthorized")) {
+          clearAuth();
+          window.location.href = "login.html";
+          return;
+        }
+        alertBox.className = "alert alert-error";
+        alertBox.textContent = res.error || "Failed to load dashboard data.";
+        return;
+      }
+
+      // Populate Filter Options if not already initialized
+      const filterSelect = document.getElementById("officeFilter");
+      if (filterSelect.options.length <= 1 && res.allowedOffices && res.allowedOffices.length > 0) {
+        filterSelect.innerHTML = "";
+        if (res.role === "DM" || res.role === "SDM") {
+          const optAll = document.createElement("option");
+          optAll.value = "All";
+          optAll.textContent = "All Authorized Offices";
+          filterSelect.appendChild(optAll);
+        }
+        res.allowedOffices.forEach(off => {
+          const opt = document.createElement("option");
+          opt.value = off;
+          opt.textContent = off;
+          filterSelect.appendChild(opt);
+        });
+      }
+
+      // Stat cards
+      document.getElementById("statTotalCount").textContent = res.totalCount || 0;
+      document.getElementById("statAvgRating").textContent = (res.avgRating || 0) + " / 5";
+      document.getElementById("statActiveServices").textContent = res.summary ? res.summary.length : 0;
+
+      // Summary Table
+      const summaryBody = document.getElementById("summaryTableBody");
+      if (!res.summary || res.summary.length === 0) {
+        summaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No feedback records found.</td></tr>';
+      } else {
+        summaryBody.innerHTML = res.summary.map(s => `
+          <tr>
+            <td><strong>${escapeHtml(s.service)}</strong></td>
+            <td><span style="color:var(--accent-gold)">★</span> ${s.avgRating} / 5</td>
+            <td>${s.count}</td>
+            <td style="font-size:0.85rem; color:var(--text-muted);">
+              ${s.feedbacks && s.feedbacks.length > 0 
+                ? s.feedbacks.map(f => `<div>"${escapeHtml(f.text)}" <small>(${f.date})</small></div>`).join("") 
+                : "<em>None</em>"}
+            </td>
+          </tr>
+        `).join("");
+      }
+
+      // Office Breakdown Table
+      if (res.role === "DM" || res.role === "SDM") {
+        document.getElementById("officeBreakdownSection").classList.remove("hidden");
+        const officeBody = document.getElementById("officeTableBody");
+        if (!res.officeBreakdown || res.officeBreakdown.length === 0) {
+          officeBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">No office data available.</td></tr>';
+        } else {
+          officeBody.innerHTML = res.officeBreakdown.map(o => `
+            <tr>
+              <td>${escapeHtml(o.office)}</td>
+              <td><span style="color:var(--accent-gold)">★</span> ${o.avgRating}</td>
+              <td>${o.count}</td>
+            </tr>
+          `).join("");
+        }
+      }
+
+      // Recent Table
+      const recentBody = document.getElementById("recentTableBody");
+      if (!res.recent || res.recent.length === 0) {
+        recentBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No recent submissions.</td></tr>';
+      } else {
+        recentBody.innerHTML = res.recent.map(r => `
+          <tr>
+            <td>${escapeHtml(r.date)}</td>
+            <td>${escapeHtml(r.office)}</td>
+            <td>${escapeHtml(r.service)}</td>
+            <td><span style="color:var(--accent-gold)">★</span> ${r.rating}</td>
+            <td>${escapeHtml(r.feedback || "—")}</td>
+          </tr>
+        `).join("");
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    document.getElementById("officeFilter").addEventListener("change", loadDashboardData);
+
+    // Initial load
+    loadDashboardData();
+  </script>
+</body>
+</html>
