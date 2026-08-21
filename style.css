@@ -1,5 +1,5 @@
 /* ============================================================
-   DM Office West Tripura - Premium Light Portal Design System
+   DM Office West Tripura - Responsive Light Portal Design System
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
 
@@ -15,7 +15,7 @@
   --border-light: #e2e8f0;
   --shadow-card: 0 4px 20px rgba(11, 29, 81, 0.07);
   --shadow-hover: 0 8px 25px rgba(11, 29, 81, 0.12);
-  --radius-card: 16px;
+  --radius-card: 18px;
   --radius-pill: 30px;
   --radius-input: 10px;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -26,6 +26,11 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -54,13 +59,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   background: var(--accent-gold);
   border-radius: 50%;
-  margin: 0 auto 12px;
+  margin: 0 auto 14px;
   border: 2px solid #ffffff;
-  box-shadow: 0 4px 14px rgba(200, 149, 42, 0.4);
+  box-shadow: 0 4px 18px rgba(200, 149, 42, 0.45);
   text-decoration: none;
   transition: transform 0.2s, box-shadow 0.2s;
   cursor: pointer;
@@ -68,11 +73,11 @@ body {
 
 .emblem-link:hover {
   transform: scale(1.06);
-  box-shadow: 0 6px 18px rgba(200, 149, 42, 0.6);
+  box-shadow: 0 6px 20px rgba(200, 149, 42, 0.65);
 }
 
 .emblem-link span {
-  font-size: 28px;
+  font-size: 30px;
 }
 
 .header-banner h1 {
@@ -101,6 +106,8 @@ body {
   align-items: center;
   border-bottom: 4px solid var(--accent-gold);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .dash-brand-link {
@@ -147,6 +154,55 @@ body {
   gap: 10px;
 }
 
+/* Responsive Mobile Navigation Bar */
+@media (max-width: 640px) {
+  .header-banner {
+    padding: 20px 14px 18px;
+  }
+
+  .header-banner h1 {
+    font-size: 1.35rem;
+  }
+
+  .header-banner p {
+    font-size: 0.72rem;
+  }
+
+  .emblem-link {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 10px;
+  }
+
+  .emblem-link span {
+    font-size: 24px;
+  }
+
+  .dash-navbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px 14px;
+    gap: 12px;
+  }
+  
+  .dash-brand-link {
+    justify-content: center;
+  }
+
+  .dash-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .dash-actions .btn {
+    flex: 1;
+    padding: 8px 6px;
+    font-size: 0.76rem;
+    text-align: center;
+  }
+}
+
 /* ============================================================
    CONTAINERS & CARDS
    ============================================================ */
@@ -159,17 +215,36 @@ body {
 }
 
 .form-wrapper {
-  max-width: 600px;
-  margin: 30px auto;
+  max-width: 580px;
+  margin: 25px auto;
+}
+
+@media (max-width: 480px) {
+  .main-wrapper {
+    padding: 0 12px;
+    margin: 15px auto;
+  }
+  
+  .form-wrapper {
+    margin: 15px auto;
+    padding: 0 4px;
+  }
 }
 
 .card {
   background: var(--bg-card);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  padding: 32px;
+  padding: 28px 24px;
   border: 1px solid var(--border-light);
   margin-bottom: 25px;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 20px 16px;
+    border-radius: 16px;
+  }
 }
 
 .card-top-bar {
@@ -179,24 +254,36 @@ body {
   margin-bottom: 24px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--border-light);
+  gap: 10px;
 }
 
 .card-badge-title {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--primary-navy);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  white-space: nowrap;
+}
+
+@media (max-width: 380px) {
+  .card-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-top-bar .btn {
+    width: 100%;
+  }
 }
 
 /* ============================================================
-   FORM CONTROLS & STEP BADGES
+   FORM CONTROLS & STEP BADGES WITH DIVIDERS
    ============================================================ */
 .step-item {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
+  padding-bottom: 10px;
 }
 
 .step-header {
@@ -208,7 +295,15 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--accent-gold);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.step-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+  margin-left: 6px;
 }
 
 .step-circle {
@@ -222,6 +317,7 @@ body {
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 700;
+  flex-shrink: 0;
 }
 
 .required {
@@ -230,22 +326,30 @@ body {
 
 .pill-options {
   display: flex;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 8px;
+  margin-bottom: 14px;
 }
 
 .pill-option-btn {
   flex: 1;
-  padding: 11px 14px;
+  padding: 11px 8px;
   background: #ffffff;
   border: 1.5px solid var(--border-light);
   border-radius: var(--radius-input);
   color: var(--text-dark);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   cursor: pointer;
   text-align: center;
   transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .pill-option-btn {
+    font-size: 0.78rem;
+    padding: 9px 4px;
+  }
 }
 
 .pill-option-btn:hover {
@@ -262,7 +366,7 @@ body {
 
 select, input[type="text"], input[type="email"], input[type="password"], input[type="tel"], textarea {
   width: 100%;
-  padding: 12px 16px;
+  padding: 12px 14px;
   background: #f8fafc;
   border: 1.5px solid var(--border-light);
   border-radius: var(--radius-input);
@@ -297,9 +401,16 @@ select:disabled {
   display: flex;
   justify-content: center;
   gap: 12px;
-  font-size: 2.5rem;
+  font-size: 2.6rem;
   cursor: pointer;
   user-select: none;
+}
+
+@media (max-width: 400px) {
+  .stars-row {
+    font-size: 2.1rem;
+    gap: 8px;
+  }
 }
 
 .stars-row span {
@@ -328,7 +439,7 @@ select:disabled {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px 22px;
+  padding: 10px 20px;
   border-radius: var(--radius-pill);
   font-size: 0.88rem;
   font-weight: 700;
@@ -405,6 +516,25 @@ select:disabled {
 .level-pills {
   display: flex;
   gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .level-pills {
+    width: 100%;
+  }
+
+  .dash-pill-btn {
+    flex: 1;
+    padding: 8px 4px;
+    font-size: 0.78rem;
+    text-align: center;
+  }
 }
 
 .dash-pill-btn {
@@ -523,6 +653,12 @@ select:disabled {
   margin-bottom: 35px;
 }
 
+@media (max-width: 500px) {
+  .office-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .office-stat-card {
   background: var(--bg-card);
   border-radius: 12px;
@@ -587,12 +723,14 @@ select:disabled {
   padding: 20px;
   border: 1px solid var(--border-light);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  white-space: nowrap;
 }
 
 .data-table th {
@@ -608,7 +746,7 @@ select:disabled {
 
 .data-table td {
   padding: 12px 16px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-dark);
   border-bottom: 1px solid var(--border-light);
 }
@@ -645,7 +783,7 @@ select:disabled {
 
 .footer {
   text-align: center;
-  padding: 24px;
+  padding: 24px 16px;
   font-size: 0.8rem;
   color: var(--text-muted);
   margin-top: auto;

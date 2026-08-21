@@ -11,7 +11,7 @@
   <!-- Top Dashboard Navbar -->
   <nav class="dash-navbar">
     <a href="index.html" class="dash-brand-link" title="Go to Citizen Feedback Portal">
-      <div class="dash-brand-icon">🏛️</div>
+      <div class="dash-brand-icon">🏠</div>
       <div>
         <div class="dash-title">Feedback Dashboard</div>
         <div class="dash-subtitle" id="userSubHead">DM Office, West Tripura</div>
@@ -149,7 +149,6 @@
         btnSdm.classList.add("disabled");
       }
 
-      // Highlight active pill
       document.querySelectorAll(".dash-pill-btn").forEach(b => b.classList.remove("active"));
       const activeBtn = document.getElementById("pill-" + currentLevelFilter);
       if (activeBtn) activeBtn.classList.add("active");
@@ -303,7 +302,6 @@
       document.getElementById("statTotalResponses").textContent = dashboardData.totalCount || 0;
       document.getElementById("statAvgRating").textContent = dashboardData.avgRating ? dashboardData.avgRating.toFixed(1) : "0.0";
 
-      // Render Office Summary Cards Grid
       const grid = document.getElementById("officeCardsGrid");
       let breakdown = dashboardData.officeBreakdown || [];
 
@@ -339,7 +337,6 @@
         }).join("");
       }
 
-      // Render Recent Submissions Table
       const recentBody = document.getElementById("recentTableBody");
       const recent = dashboardData.recent || [];
 
@@ -372,7 +369,6 @@
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Initialize permissions & initial dropdown
     initRolePermissions();
     populateDropdownByLevel(currentLevelFilter);
     loadDashboardData();
