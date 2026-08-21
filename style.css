@@ -425,6 +425,14 @@ select:disabled {
   border-color: var(--primary-navy);
 }
 
+.dash-pill-btn:disabled, .dash-pill-btn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f1f5f9;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
+
 .section-title {
   font-family: var(--font-serif);
   font-size: 1.35rem;

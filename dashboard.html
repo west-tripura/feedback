@@ -14,7 +14,7 @@
       <div class="dash-brand-icon">🏛️</div>
       <div>
         <div class="dash-title">Feedback Dashboard</div>
-        <div class="dash-subtitle">DM Office, West Tripura</div>
+        <div class="dash-subtitle" id="userSubHead">DM Office, West Tripura</div>
       </div>
     </a>
     
@@ -27,18 +27,17 @@
 
   <div class="main-wrapper">
 
-    <!-- Filter Bar: Level Pills & Office Select Dropdown -->
+    <!-- Filter Bar: Level Pills & Interconnected Office Dropdown -->
     <div class="filter-bar">
       <div class="level-pills">
-        <button type="button" class="dash-pill-btn active" onclick="filterByLevel('ALL')">All</button>
-        <button type="button" class="dash-pill-btn" onclick="filterByLevel('DM')">DM Level</button>
-        <button type="button" class="dash-pill-btn" onclick="filterByLevel('SDM')">SDM Level</button>
-        <button type="button" class="dash-pill-btn" onclick="filterByLevel('BDO')">BDO Level</button>
+        <button type="button" class="dash-pill-btn active" id="pill-DM" onclick="selectLevelPill('DM')">DM Level</button>
+        <button type="button" class="dash-pill-btn" id="pill-SDM" onclick="selectLevelPill('SDM')">SDM Level</button>
+        <button type="button" class="dash-pill-btn" id="pill-BDO" onclick="selectLevelPill('BDO')">BDO Level</button>
       </div>
 
-      <div style="min-width: 220px;">
+      <div style="min-width: 260px;">
         <select id="officeFilterSelect" onchange="onOfficeSelectChange()">
-          <option value="All">All Offices</option>
+          <!-- Options dynamically populated by active level pill -->
         </select>
       </div>
     </div>
@@ -104,18 +103,167 @@
   <script>
     const token = checkAuthOrRedirect();
     let dashboardData = null;
-    let currentLevelFilter = "ALL";
+
+    let userRole = localStorage.getItem("feedback_role") || "DM";
+    let userOffice = localStorage.getItem("feedback_office") || "DM Office";
+
+    let currentLevelFilter = userRole === "BDO" ? "BDO" : (userRole === "SDM" ? "SDM" : "DM");
+
+    const REGION_MAP = {
+      "SDM Office - Sadar": {
+        regionName: "Sadar Region",
+        bdos: ["BDO Office - Dukli"]
+      },
+      "SDM Office - Mohanpur": {
+        regionName: "Mohanpur Region",
+        bdos: ["BDO Office - Mohanpur", "BDO Office - Bamutia", "BDO Office - Hezamara", "BDO Office - Lefunga"]
+      },
+      "SDM Office - Jirania": {
+        regionName: "Jirania Region",
+        bdos: ["BDO Office - Jirania", "BDO Office - Mandai", "BDO Office - Belbari", "BDO Office - Old Agartala"]
+      }
+    };
 
     function logout() {
       clearAuth();
       window.location.href = "login.html";
     }
 
+    function initRolePermissions() {
+      const btnDm = document.getElementById("pill-DM");
+      const btnSdm = document.getElementById("pill-SDM");
+      const btnBdo = document.getElementById("pill-BDO");
+      const subHead = document.getElementById("userSubHead");
+
+      if (userOffice) {
+        subHead.textContent = userOffice + " (" + userRole + ")";
+      }
+
+      if (userRole === "SDM") {
+        btnDm.disabled = true;
+        btnDm.classList.add("disabled");
+      } else if (userRole === "BDO") {
+        btnDm.disabled = true;
+        btnDm.classList.add("disabled");
+        btnSdm.disabled = true;
+        btnSdm.classList.add("disabled");
+      }
+
+      // Highlight active pill
+      document.querySelectorAll(".dash-pill-btn").forEach(b => b.classList.remove("active"));
+      const activeBtn = document.getElementById("pill-" + currentLevelFilter);
+      if (activeBtn) activeBtn.classList.add("active");
+    }
+
+    function selectLevelPill(level) {
+      const btn = document.getElementById("pill-" + level);
+      if (btn.disabled || btn.classList.contains("disabled")) return;
+
+      currentLevelFilter = level;
+      document.querySelectorAll(".dash-pill-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      populateDropdownByLevel(level);
+      loadDashboardData();
+    }
+
+    function populateDropdownByLevel(level) {
+      const select = document.getElementById("officeFilterSelect");
+      select.innerHTML = "";
+
+      if (level === "DM") {
+        if (userRole === "DM") {
+          const optAll = document.createElement("option");
+          optAll.value = "All";
+          optAll.textContent = "All Offices (Cumulative District Rating)";
+          select.appendChild(optAll);
+
+          const optDm = document.createElement("option");
+          optDm.value = "DM Office";
+          optDm.textContent = "DM Office";
+          select.appendChild(optDm);
+        }
+      } 
+      else if (level === "SDM") {
+        if (userRole === "DM") {
+          const groupRegions = document.createElement("optgroup");
+          groupRegions.label = "SDM Regions (Cumulative SDM + BDOs)";
+          ["Sadar Region", "Mohanpur Region", "Jirania Region"].forEach(r => {
+            const opt = document.createElement("option");
+            opt.value = r;
+            opt.textContent = r;
+            groupRegions.appendChild(opt);
+          });
+          select.appendChild(groupRegions);
+
+          const groupOffices = document.createElement("optgroup");
+          groupOffices.label = "Specific SDM Offices";
+          ["SDM Office - Sadar", "SDM Office - Mohanpur", "SDM Office - Jirania"].forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s;
+            opt.textContent = s;
+            groupOffices.appendChild(opt);
+          });
+          select.appendChild(groupOffices);
+        } 
+        else if (userRole === "SDM") {
+          const regionInfo = REGION_MAP[userOffice];
+          if (regionInfo) {
+            const optRegion = document.createElement("option");
+            optRegion.value = regionInfo.regionName;
+            optRegion.textContent = regionInfo.regionName + " (Cumulative Region)";
+            select.appendChild(optRegion);
+          }
+
+          const optOffice = document.createElement("option");
+          optOffice.value = userOffice;
+          optOffice.textContent = userOffice + " (Office Only)";
+          select.appendChild(optOffice);
+        }
+      } 
+      else if (level === "BDO") {
+        if (userRole === "DM") {
+          const allBdos = [
+            "BDO Office - Dukli", "BDO Office - Mohanpur", "BDO Office - Bamutia",
+            "BDO Office - Hezamara", "BDO Office - Lefunga", "BDO Office - Jirania",
+            "BDO Office - Mandai", "BDO Office - Belbari", "BDO Office - Old Agartala"
+          ];
+          allBdos.forEach(b => {
+            const opt = document.createElement("option");
+            opt.value = b;
+            opt.textContent = b;
+            select.appendChild(opt);
+          });
+        } 
+        else if (userRole === "SDM") {
+          const regionInfo = REGION_MAP[userOffice];
+          if (regionInfo && regionInfo.bdos) {
+            regionInfo.bdos.forEach(b => {
+              const opt = document.createElement("option");
+              opt.value = b;
+              opt.textContent = b;
+              select.appendChild(opt);
+            });
+          }
+        } 
+        else if (userRole === "BDO") {
+          const opt = document.createElement("option");
+          opt.value = userOffice;
+          opt.textContent = userOffice;
+          select.appendChild(opt);
+        }
+      }
+    }
+
+    function onOfficeSelectChange() {
+      loadDashboardData();
+    }
+
     async function loadDashboardData() {
       const alertBox = document.getElementById("alertBox");
       alertBox.style.display = "none";
 
-      const selectedOffice = document.getElementById("officeFilterSelect").value;
+      const selectedOffice = document.getElementById("officeFilterSelect").value || "All";
       const res = await apiPost("getDashboardData", { token, officeFilter: selectedOffice });
 
       if (!res.success) {
@@ -130,44 +278,32 @@
       }
 
       dashboardData = res;
-
-      // Populate dropdown
-      const filterSelect = document.getElementById("officeFilterSelect");
-      if (filterSelect.options.length <= 1 && res.allowedOffices && res.allowedOffices.length > 0) {
-        filterSelect.innerHTML = '<option value="All">All Offices</option>';
-        res.allowedOffices.forEach(off => {
-          const opt = document.createElement("option");
-          opt.value = off;
-          opt.textContent = off;
-          filterSelect.appendChild(opt);
-        });
-      }
+      if (res.role) userRole = res.role;
+      if (res.ownOffice) userOffice = res.ownOffice;
 
       renderDashboard();
-    }
-
-    function filterByLevel(level) {
-      currentLevelFilter = level;
-      document.querySelectorAll(".dash-pill-btn").forEach(p => p.classList.remove("active"));
-      event.target.classList.add("active");
-      renderDashboard();
-    }
-
-    function onOfficeSelectChange() {
-      loadDashboardData();
     }
 
     function renderDashboard() {
       if (!dashboardData) return;
 
-      const selectedOffice = document.getElementById("officeFilterSelect").value;
-      const titleText = selectedOffice !== "All" ? selectedOffice + " — Overview" : "All Offices — Cumulative View";
+      const selectedOffice = document.getElementById("officeFilterSelect").value || "All";
+      let titleText = "All Offices — Cumulative View";
+      if (selectedOffice === "All") {
+        titleText = "All Offices — Cumulative View";
+      } else if (selectedOffice.indexOf("Region") !== -1) {
+        titleText = selectedOffice + " — Cumulative Overview";
+      } else {
+        titleText = selectedOffice + " — Overview";
+      }
+
       document.getElementById("cumulativeTitle").textContent = titleText;
       document.getElementById("statTotalSubtext").textContent = titleText;
 
       document.getElementById("statTotalResponses").textContent = dashboardData.totalCount || 0;
       document.getElementById("statAvgRating").textContent = dashboardData.avgRating ? dashboardData.avgRating.toFixed(1) : "0.0";
 
+      // Render Office Summary Cards Grid
       const grid = document.getElementById("officeCardsGrid");
       let breakdown = dashboardData.officeBreakdown || [];
 
@@ -180,7 +316,7 @@
       }
 
       if (breakdown.length === 0) {
-        grid.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; grid-column: 1/-1;">No office records found.</div>';
+        grid.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; grid-column: 1/-1;">No office records found for current selection.</div>';
       } else {
         grid.innerHTML = breakdown.map(o => {
           const stars = renderStars(o.avgRating);
@@ -203,6 +339,7 @@
         }).join("");
       }
 
+      // Render Recent Submissions Table
       const recentBody = document.getElementById("recentTableBody");
       const recent = dashboardData.recent || [];
 
@@ -235,6 +372,9 @@
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
+    // Initialize permissions & initial dropdown
+    initRolePermissions();
+    populateDropdownByLevel(currentLevelFilter);
     loadDashboardData();
   </script>
 </body>
