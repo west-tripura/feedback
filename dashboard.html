@@ -3,132 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Dashboard – DM Office West Tripura Feedback Portal</title>
+  <title>Feedback Dashboard — DM Office, West Tripura</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header / Navbar -->
-  <nav class="navbar">
-    <div class="navbar-brand">
-      <span>🏛️</span> West Tripura Feedback Dashboard
+
+  <!-- Top Navigation Bar -->
+  <nav class="dash-nav">
+    <div>
+      <div class="dash-nav-title">Feedback Dashboard</div>
+      <div class="dash-nav-subtitle">DM Office, West Tripura</div>
     </div>
-    <div class="navbar-user">
-      <span id="userOfficeLabel" style="font-weight: 500;">Loading...</span>
-      <span id="roleBadge" class="badge">ROLE</span>
-      <button id="logoutBtn" class="btn btn-secondary" style="width: auto; padding: 6px 14px; font-size: 0.85rem;">Logout</button>
+    <div class="dash-nav-actions">
+      <a href="index.html" class="btn btn-sm">Feedback Form</a>
+      <button id="refreshBtn" onclick="loadDashboardData()" class="btn btn-outline-gold btn-sm" style="border-color: rgba(255,255,255,0.4); color: white;">Refresh</button>
+      <button id="logoutBtn" onclick="logout()" class="btn btn-navy btn-sm" style="border: 1px solid rgba(255,255,255,0.2);">Logout</button>
     </div>
   </nav>
 
-  <div class="auth-wrapper" style="align-items: flex-start;">
-    <div class="glass-card wide">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
-        <h2>Performance Overview</h2>
-        
-        <div style="display: flex; align-items: center; gap: 10px; min-width: 250px;">
-          <label for="officeFilter" style="white-space: nowrap;">Office Filter:</label>
-          <select id="officeFilter">
-            <option value="All">All Authorized Offices</option>
-          </select>
-        </div>
-      </div>
+  <div class="main-container">
 
-      <div id="alertBox" class="alert"></div>
-
-      <!-- Stat Cards Grid -->
-      <div class="dashboard-grid">
-        <div class="stat-card">
-          <div class="subtitle">Total Submissions</div>
-          <div class="val" id="statTotalCount">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="subtitle">Average Satisfaction</div>
-          <div class="val" id="statAvgRating">0.0 / 5</div>
-        </div>
-        <div class="stat-card">
-          <div class="subtitle">Active Services</div>
-          <div class="val" id="statActiveServices" style="color: var(--accent-blue);">0</div>
-        </div>
-      </div>
-
-      <!-- Services Summary -->
-      <h3 style="margin-top: 30px;">Service Rating Breakdown</h3>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Service Name</th>
-              <th>Avg Rating</th>
-              <th>Submissions</th>
-              <th>Recent Citizen Comments</th>
-            </tr>
-          </thead>
-          <tbody id="summaryTableBody">
-            <tr><td colspan="4" style="text-align: center; color: var(--text-muted);">Loading summary...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Office Breakdown (DM / SDM) -->
-      <div id="officeBreakdownSection" class="hidden">
-        <h3 style="margin-top: 30px;">Office Wise Breakdown</h3>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>Office Name</th>
-                <th>Avg Rating</th>
-                <th>Total Submissions</th>
-              </tr>
-            </thead>
-            <tbody id="officeTableBody">
-              <tr><td colspan="3" style="text-align: center; color: var(--text-muted);">Loading breakdown...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Recent Feedbacks -->
-      <h3 style="margin-top: 30px;">Recent Citizen Feedback</h3>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Office</th>
-              <th>Service</th>
-              <th>Rating</th>
-              <th>Feedback</th>
-            </tr>
-          </thead>
-          <tbody id="recentTableBody">
-            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading recent feedback...</td></tr>
-          </tbody>
-        </table>
-      </div>
-
+    <!-- Filter Pills Row -->
+    <div class="filter-pills" id="levelPillsRow">
+      <button type="button" class="dash-pill active" onclick="filterByLevel('ALL')">All</button>
+      <button type="button" class="dash-pill" onclick="filterByLevel('DM')">DM Level</button>
+      <button type="button" class="dash-pill" onclick="filterByLevel('SDM')">SDM Level</button>
+      <button type="button" class="dash-pill" onclick="filterByLevel('BDO')">BDO Level</button>
     </div>
+
+    <!-- Office Filter Dropdown -->
+    <div style="max-width: 320px; margin-bottom: 25px;">
+      <select id="officeFilterSelect" onchange="onOfficeSelectChange()">
+        <option value="All">All Offices</option>
+      </select>
+    </div>
+
+    <div id="alertBox" class="alert"></div>
+
+    <!-- Cumulative View Header & Stat Cards -->
+    <div class="dashboard-title-row">
+      <h2 class="section-heading" id="cumulativeTitle">All Offices — Cumulative View</h2>
+    </div>
+
+    <div class="cumulative-grid">
+      <div class="stat-card-bubbly blue-accent">
+        <div class="stat-label">Total Responses</div>
+        <div class="stat-value" id="statTotalResponses">0</div>
+        <div class="stat-sub" id="statTotalSubtext">All Offices — Cumulative View</div>
+      </div>
+      <div class="stat-card-bubbly gold-accent">
+        <div class="stat-label">Average Rating</div>
+        <div class="stat-value" id="statAvgRating">0.0</div>
+        <div class="stat-sub">Out of 5 stars</div>
+      </div>
+    </div>
+
+    <!-- Office-wise Summary Cards -->
+    <div class="dashboard-title-row">
+      <h2 class="section-heading">Office-wise Summary</h2>
+    </div>
+
+    <div class="office-cards-grid" id="officeCardsGrid">
+      <div style="color: var(--text-muted); font-size: 0.9rem;">Loading summary...</div>
+    </div>
+
+    <!-- Recent Submissions Table -->
+    <div class="dashboard-title-row" style="margin-top: 35px;">
+      <h2 class="section-heading">Recent Submissions</h2>
+    </div>
+
+    <div class="table-card">
+      <table class="table-bubbly">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Office</th>
+            <th>Rating</th>
+            <th>Feedback</th>
+          </tr>
+        </thead>
+        <tbody id="recentTableBody">
+          <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Loading recent submissions...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
+
+  <footer class="footer">
+    <div><strong>Office of the District Magistrate & Collector, West Tripura</strong></div>
+    <div style="margin-top: 4px;">Designed by NIC West Tripura</div>
+  </footer>
 
   <script src="app.js"></script>
   <script>
     const token = checkAuthOrRedirect();
-    let currentRole = localStorage.getItem("feedback_role") || "";
-    let currentOffice = localStorage.getItem("feedback_office") || "";
+    let dashboardData = null;
+    let currentLevelFilter = "ALL";
 
-    document.getElementById("userOfficeLabel").textContent = currentOffice || "Admin";
-    document.getElementById("roleBadge").textContent = currentRole || "ADMIN";
-
-    document.getElementById("logoutBtn").addEventListener("click", () => {
+    function logout() {
       clearAuth();
       window.location.href = "login.html";
-    });
+    }
 
     async function loadDashboardData() {
-      const officeFilter = document.getElementById("officeFilter").value;
       const alertBox = document.getElementById("alertBox");
       alertBox.style.display = "none";
 
-      const res = await apiPost("getDashboardData", { token, officeFilter });
+      const selectedOffice = document.getElementById("officeFilterSelect").value;
+      const res = await apiPost("getDashboardData", { token, officeFilter: selectedOffice });
 
       if (!res.success) {
         if (res.error && res.error.includes("Unauthorized")) {
@@ -141,16 +124,12 @@
         return;
       }
 
-      // Populate Filter Options if not already initialized
-      const filterSelect = document.getElementById("officeFilter");
+      dashboardData = res;
+
+      // Populate office select dropdown if not already initialized
+      const filterSelect = document.getElementById("officeFilterSelect");
       if (filterSelect.options.length <= 1 && res.allowedOffices && res.allowedOffices.length > 0) {
-        filterSelect.innerHTML = "";
-        if (res.role === "DM" || res.role === "SDM") {
-          const optAll = document.createElement("option");
-          optAll.value = "All";
-          optAll.textContent = "All Authorized Offices";
-          filterSelect.appendChild(optAll);
-        }
+        filterSelect.innerHTML = '<option value="All">All Offices</option>';
         res.allowedOffices.forEach(off => {
           const opt = document.createElement("option");
           opt.value = off;
@@ -159,70 +138,99 @@
         });
       }
 
-      // Stat cards
-      document.getElementById("statTotalCount").textContent = res.totalCount || 0;
-      document.getElementById("statAvgRating").textContent = (res.avgRating || 0) + " / 5";
-      document.getElementById("statActiveServices").textContent = res.summary ? res.summary.length : 0;
+      renderDashboard();
+    }
 
-      // Summary Table
-      const summaryBody = document.getElementById("summaryTableBody");
-      if (!res.summary || res.summary.length === 0) {
-        summaryBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No feedback records found.</td></tr>';
+    function filterByLevel(level) {
+      currentLevelFilter = level;
+      document.querySelectorAll(".dash-pill").forEach(p => p.classList.remove("active"));
+      event.target.classList.add("active");
+      renderDashboard();
+    }
+
+    function onOfficeSelectChange() {
+      loadDashboardData();
+    }
+
+    function renderDashboard() {
+      if (!dashboardData) return;
+
+      const selectedOffice = document.getElementById("officeFilterSelect").value;
+      const titleText = selectedOffice !== "All" ? selectedOffice + " — Overview" : "All Offices — Cumulative View";
+      document.getElementById("cumulativeTitle").textContent = titleText;
+      document.getElementById("statTotalSubtext").textContent = titleText;
+
+      document.getElementById("statTotalResponses").textContent = dashboardData.totalCount || 0;
+      document.getElementById("statAvgRating").textContent = dashboardData.avgRating ? dashboardData.avgRating.toFixed(1) : "0.0";
+
+      // Filter Office Breakdown cards based on selected pill level
+      const grid = document.getElementById("officeCardsGrid");
+      let breakdown = dashboardData.officeBreakdown || [];
+
+      if (currentLevelFilter === "DM") {
+        breakdown = breakdown.filter(o => o.office.includes("DM"));
+      } else if (currentLevelFilter === "SDM") {
+        breakdown = breakdown.filter(o => o.office.includes("SDM"));
+      } else if (currentLevelFilter === "BDO") {
+        breakdown = breakdown.filter(o => o.office.includes("BDO"));
+      }
+
+      if (breakdown.length === 0) {
+        grid.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; grid-column: 1/-1;">No office records found.</div>';
       } else {
-        summaryBody.innerHTML = res.summary.map(s => `
-          <tr>
-            <td><strong>${escapeHtml(s.service)}</strong></td>
-            <td><span style="color:var(--accent-gold)">★</span> ${s.avgRating} / 5</td>
-            <td>${s.count}</td>
-            <td style="font-size:0.85rem; color:var(--text-muted);">
-              ${s.feedbacks && s.feedbacks.length > 0 
-                ? s.feedbacks.map(f => `<div>"${escapeHtml(f.text)}" <small>(${f.date})</small></div>`).join("") 
-                : "<em>None</em>"}
-            </td>
-          </tr>
-        `).join("");
+        grid.innerHTML = breakdown.map(o => {
+          const stars = renderStars(o.avgRating);
+          const badge = o.avgRating >= 4.8 ? ' 🥇' : (o.avgRating >= 4.5 ? ' 🥈' : '');
+          return `
+            <div class="office-card-bubbly">
+              <div>
+                <div class="office-card-title">
+                  <span>${escapeHtml(o.office)}${badge}</span>
+                </div>
+                <div class="office-card-score">
+                  <div class="score-num">${o.avgRating}<span>/5</span></div>
+                  <div class="score-responses">${o.count} response${o.count === 1 ? '' : 's'}</div>
+                </div>
+                <div class="office-card-stars">${stars}</div>
+              </div>
+              <div class="office-card-bar"></div>
+            </div>
+          `;
+        }).join("");
       }
 
-      // Office Breakdown Table
-      if (res.role === "DM" || res.role === "SDM") {
-        document.getElementById("officeBreakdownSection").classList.remove("hidden");
-        const officeBody = document.getElementById("officeTableBody");
-        if (!res.officeBreakdown || res.officeBreakdown.length === 0) {
-          officeBody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:var(--text-muted);">No office data available.</td></tr>';
-        } else {
-          officeBody.innerHTML = res.officeBreakdown.map(o => `
-            <tr>
-              <td>${escapeHtml(o.office)}</td>
-              <td><span style="color:var(--accent-gold)">★</span> ${o.avgRating}</td>
-              <td>${o.count}</td>
-            </tr>
-          `).join("");
-        }
-      }
-
-      // Recent Table
+      // Recent Submissions Table
       const recentBody = document.getElementById("recentTableBody");
-      if (!res.recent || res.recent.length === 0) {
-        recentBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No recent submissions.</td></tr>';
+      const recent = dashboardData.recent || [];
+
+      if (recent.length === 0) {
+        recentBody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No submissions recorded yet.</td></tr>';
       } else {
-        recentBody.innerHTML = res.recent.map(r => `
+        recentBody.innerHTML = recent.map(r => `
           <tr>
             <td>${escapeHtml(r.date)}</td>
-            <td>${escapeHtml(r.office)}</td>
-            <td>${escapeHtml(r.service)}</td>
-            <td><span style="color:var(--accent-gold)">★</span> ${r.rating}</td>
+            <td><strong>${escapeHtml(r.office)}</strong></td>
+            <td><span style="color: #fbbf24;">${renderStars(r.rating)}</span></td>
             <td>${escapeHtml(r.feedback || "—")}</td>
           </tr>
         `).join("");
       }
     }
 
-    function escapeHtml(text) {
-      if (!text) return "";
-      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    function renderStars(rating) {
+      const full = Math.floor(rating);
+      let stars = "";
+      for (let i = 1; i <= 5; i++) {
+        if (i <= full) stars += "★";
+        else stars += "☆";
+      }
+      return stars;
     }
 
-    document.getElementById("officeFilter").addEventListener("change", loadDashboardData);
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
 
     // Initial load
     loadDashboardData();

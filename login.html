@@ -3,37 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Login – DM Office West Tripura Feedback Portal</title>
+  <title>Admin Sign In — DM Office West Tripura</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="auth-wrapper">
-    <div class="glass-card">
-      <h1>Admin Sign In</h1>
-      <p class="subtitle">Enter your official credentials (BDO / SDM / DM)</p>
+
+  <!-- Header Banner -->
+  <header class="header-banner">
+    <div class="emblem-wrapper">
+      <span>🏛️</span>
+    </div>
+    <h1>DM & Collector, West Tripura</h1>
+    <p>Admin Portal Sign In</p>
+  </header>
+
+  <div class="main-container form-wrapper">
+    <div class="bubbly-card">
+      <h2 style="font-family: var(--font-serif); color: var(--primary-navy); margin-bottom: 6px;">Admin Login</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Enter your authorized Gmail & Password (BDO / SDM / DM)</p>
 
       <div id="alertBox" class="alert"></div>
 
       <form id="loginForm">
-        <div class="form-group">
-          <label for="email">Gmail ID / Email</label>
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">Email / Gmail ID</label>
           <input type="email" id="email" placeholder="e.g. admin@gmail.com" required />
         </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">Password</label>
           <input type="password" id="password" placeholder="••••••••" required />
         </div>
 
-        <button type="submit" id="submitBtn" class="btn">Sign In</button>
+        <button type="submit" id="submitBtn" class="btn btn-navy">Sign In</button>
       </form>
 
-      <div class="auth-links">
-        <a href="reset.html">Forgot password?</a>
-        <a href="index.html">Submit Public Feedback →</a>
+      <div style="display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.88rem;">
+        <a href="reset.html" style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">Forgot password?</a>
+        <a href="index.html" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">← Public Feedback Form</a>
       </div>
     </div>
   </div>
+
+  <footer class="footer">
+    <div><strong>Office of the District Magistrate & Collector, West Tripura</strong></div>
+    <div style="margin-top: 4px;">Designed by NIC West Tripura</div>
+  </footer>
 
   <script src="app.js"></script>
   <script>

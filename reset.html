@@ -3,53 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reset Password – Feedback Portal</title>
+  <title>Reset Password — DM Office West Tripura</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="auth-wrapper">
-    <div class="glass-card">
-      <h1>Reset Password</h1>
-      <p class="subtitle" id="stepSubtitle">Step 1: Enter your registered admin email</p>
+
+  <!-- Header Banner -->
+  <header class="header-banner">
+    <div class="emblem-wrapper">
+      <span>🏛️</span>
+    </div>
+    <h1>DM & Collector, West Tripura</h1>
+    <p>Password Reset Portal</p>
+  </header>
+
+  <div class="main-container form-wrapper">
+    <div class="bubbly-card">
+      <h2 style="font-family: var(--font-serif); color: var(--primary-navy); margin-bottom: 6px;">Reset Password</h2>
+      <p id="stepSubtitle" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Step 1: Enter your registered admin email</p>
 
       <div id="alertBox" class="alert"></div>
 
       <!-- Step 1: Send OTP -->
       <form id="step1Form">
-        <div class="form-group">
-          <label for="email">Admin Email</label>
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">Admin Email</label>
           <input type="email" id="email" placeholder="admin@gmail.com" required />
         </div>
-        <button type="submit" id="btnStep1" class="btn">Send OTP Code</button>
+        <button type="submit" id="btnStep1" class="btn btn-navy">Send OTP Code</button>
       </form>
 
       <!-- Step 2: Verify OTP -->
       <form id="step2Form" class="hidden">
-        <div class="form-group">
-          <label for="otpCode">6-Digit OTP Code</label>
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">6-Digit OTP Code</label>
           <input type="text" id="otpCode" maxlength="6" placeholder="123456" required />
         </div>
-        <button type="submit" id="btnStep2" class="btn">Verify OTP</button>
+        <button type="submit" id="btnStep2" class="btn btn-navy">Verify OTP</button>
       </form>
 
       <!-- Step 3: Set New Password -->
       <form id="step3Form" class="hidden">
-        <div class="form-group">
-          <label for="newPassword">New Password</label>
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">New Password</label>
           <input type="password" id="newPassword" placeholder="••••••••" required />
         </div>
-        <div class="form-group">
-          <label for="confirmPassword">Confirm New Password</label>
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">Confirm New Password</label>
           <input type="password" id="confirmPassword" placeholder="••••••••" required />
         </div>
-        <button type="submit" id="btnStep3" class="btn">Update Password</button>
+        <button type="submit" id="btnStep3" class="btn btn-navy">Update Password</button>
       </form>
 
-      <div class="auth-links">
-        <a href="login.html">← Back to Login</a>
+      <div style="margin-top: 20px; text-align: center; font-size: 0.88rem;">
+        <a href="login.html" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">← Back to Sign In</a>
       </div>
     </div>
   </div>
+
+  <footer class="footer">
+    <div><strong>Office of the District Magistrate & Collector, West Tripura</strong></div>
+    <div style="margin-top: 4px;">Designed by NIC West Tripura</div>
+  </footer>
 
   <script src="app.js"></script>
   <script>
