@@ -10,37 +10,39 @@
 
   <!-- Header Banner -->
   <header class="header-banner">
-    <div class="emblem-wrapper">
+    <a href="index.html" class="home-nav-link">🏠 Home</a>
+    
+    <div class="emblem-icon">
       <span>🏛️</span>
     </div>
     <h1>DM & Collector, West Tripura</h1>
     <p>Admin Portal Sign In</p>
   </header>
 
-  <div class="main-container form-wrapper">
-    <div class="bubbly-card">
-      <h2 style="font-family: var(--font-serif); color: var(--primary-navy); margin-bottom: 6px;">Admin Login</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Enter your authorized Gmail & Password (BDO / SDM / DM)</p>
+  <div class="main-wrapper form-wrapper">
+    <div class="card">
+      <h2 style="font-family: 'Playfair Display', serif; color: var(--navy); margin-bottom: 6px;">Admin Sign In</h2>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px;">Enter your authorized Gmail & Password (BDO / SDM / DM)</p>
 
       <div id="alertBox" class="alert"></div>
 
       <form id="loginForm">
         <div style="margin-bottom: 16px;">
-          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">Email / Gmail ID</label>
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--navy); display: block; margin-bottom: 6px;">Email / Gmail ID</label>
           <input type="email" id="email" placeholder="e.g. admin@gmail.com" required />
         </div>
 
         <div style="margin-bottom: 20px;">
-          <label style="font-size: 0.85rem; font-weight: 700; color: var(--primary-navy); display: block; margin-bottom: 6px;">Password</label>
+          <label style="font-size: 0.85rem; font-weight: 700; color: var(--navy); display: block; margin-bottom: 6px;">Password</label>
           <input type="password" id="password" placeholder="••••••••" required />
         </div>
 
-        <button type="submit" id="submitBtn" class="btn btn-navy">Sign In</button>
+        <button type="submit" id="submitBtn" class="btn btn-navy btn-full">Sign In</button>
       </form>
 
       <div style="display: flex; justify-content: space-between; margin-top: 20px; font-size: 0.88rem;">
-        <a href="reset.html" style="color: var(--accent-gold); font-weight: 600; text-decoration: none;">Forgot password?</a>
-        <a href="index.html" style="color: var(--primary-navy); font-weight: 600; text-decoration: none;">← Public Feedback Form</a>
+        <a href="reset.html" style="color: var(--gold); font-weight: 600; text-decoration: none;">Forgot password?</a>
+        <a href="index.html" style="color: var(--navy); font-weight: 600; text-decoration: none;">← Public Feedback Form</a>
       </div>
     </div>
   </div>

@@ -8,72 +8,76 @@
 </head>
 <body>
 
-  <!-- Top Navigation Bar -->
-  <nav class="dash-nav">
-    <div>
-      <div class="dash-nav-title">Feedback Dashboard</div>
-      <div class="dash-nav-subtitle">DM Office, West Tripura</div>
+  <!-- Top Dashboard Navbar -->
+  <nav class="dash-navbar">
+    <div class="dash-brand">
+      <a href="index.html" class="btn btn-outline-white" style="padding: 6px 14px; font-size: 0.82rem;">🏠 Home</a>
+      <div>
+        <div class="dash-title">Feedback Dashboard</div>
+        <div class="dash-subtitle">DM Office, West Tripura</div>
+      </div>
     </div>
-    <div class="dash-nav-actions">
-      <a href="index.html" class="btn btn-sm">Feedback Form</a>
-      <button id="refreshBtn" onclick="loadDashboardData()" class="btn btn-outline-gold btn-sm" style="border-color: rgba(255,255,255,0.4); color: white;">Refresh</button>
-      <button id="logoutBtn" onclick="logout()" class="btn btn-navy btn-sm" style="border: 1px solid rgba(255,255,255,0.2);">Logout</button>
+    <div class="dash-actions">
+      <a href="index.html" class="btn btn-gold">Feedback Form</a>
+      <button onclick="loadDashboardData()" class="btn btn-outline-white">Refresh</button>
+      <button onclick="logout()" class="btn btn-outline-white">Logout</button>
     </div>
   </nav>
 
-  <div class="main-container">
+  <div class="main-wrapper">
 
-    <!-- Filter Pills Row -->
-    <div class="filter-pills" id="levelPillsRow">
-      <button type="button" class="dash-pill active" onclick="filterByLevel('ALL')">All</button>
-      <button type="button" class="dash-pill" onclick="filterByLevel('DM')">DM Level</button>
-      <button type="button" class="dash-pill" onclick="filterByLevel('SDM')">SDM Level</button>
-      <button type="button" class="dash-pill" onclick="filterByLevel('BDO')">BDO Level</button>
-    </div>
+    <!-- Filter Bar: Level Pills & Office Select Dropdown -->
+    <div class="filter-bar">
+      <div class="level-pills">
+        <button type="button" class="dash-pill-btn active" onclick="filterByLevel('ALL')">All</button>
+        <button type="button" class="dash-pill-btn" onclick="filterByLevel('DM')">DM Level</button>
+        <button type="button" class="dash-pill-btn" onclick="filterByLevel('SDM')">SDM Level</button>
+        <button type="button" class="dash-pill-btn" onclick="filterByLevel('BDO')">BDO Level</button>
+      </div>
 
-    <!-- Office Filter Dropdown -->
-    <div style="max-width: 320px; margin-bottom: 25px;">
-      <select id="officeFilterSelect" onchange="onOfficeSelectChange()">
-        <option value="All">All Offices</option>
-      </select>
+      <div style="min-width: 220px;">
+        <select id="officeFilterSelect" onchange="onOfficeSelectChange()">
+          <option value="All">All Offices</option>
+        </select>
+      </div>
     </div>
 
     <div id="alertBox" class="alert"></div>
 
-    <!-- Cumulative View Header & Stat Cards -->
-    <div class="dashboard-title-row">
-      <h2 class="section-heading" id="cumulativeTitle">All Offices — Cumulative View</h2>
+    <!-- Cumulative View -->
+    <div style="margin: 20px 0 15px;">
+      <h2 class="section-title" id="cumulativeTitle">All Offices — Cumulative View</h2>
     </div>
 
-    <div class="cumulative-grid">
-      <div class="stat-card-bubbly blue-accent">
-        <div class="stat-label">Total Responses</div>
-        <div class="stat-value" id="statTotalResponses">0</div>
-        <div class="stat-sub" id="statTotalSubtext">All Offices — Cumulative View</div>
+    <div class="cumulative-summary-grid">
+      <div class="stat-box accent-blue">
+        <div class="stat-title">Total Responses</div>
+        <div class="stat-number" id="statTotalResponses">0</div>
+        <div class="stat-subtext" id="statTotalSubtext">All Offices — Cumulative View</div>
       </div>
-      <div class="stat-card-bubbly gold-accent">
-        <div class="stat-label">Average Rating</div>
-        <div class="stat-value" id="statAvgRating">0.0</div>
-        <div class="stat-sub">Out of 5 stars</div>
+      <div class="stat-box accent-gold">
+        <div class="stat-title">Average Rating</div>
+        <div class="stat-number" id="statAvgRating">0.0</div>
+        <div class="stat-subtext">Out of 5 stars</div>
       </div>
     </div>
 
     <!-- Office-wise Summary Cards -->
-    <div class="dashboard-title-row">
-      <h2 class="section-heading">Office-wise Summary</h2>
+    <div style="margin: 30px 0 15px;">
+      <h2 class="section-title">Office-wise Summary</h2>
     </div>
 
-    <div class="office-cards-grid" id="officeCardsGrid">
+    <div class="office-summary-grid" id="officeCardsGrid">
       <div style="color: var(--text-muted); font-size: 0.9rem;">Loading summary...</div>
     </div>
 
     <!-- Recent Submissions Table -->
-    <div class="dashboard-title-row" style="margin-top: 35px;">
-      <h2 class="section-heading">Recent Submissions</h2>
+    <div style="margin: 35px 0 15px;">
+      <h2 class="section-title">Recent Submissions</h2>
     </div>
 
-    <div class="table-card">
-      <table class="table-bubbly">
+    <div class="data-table-container">
+      <table class="data-table">
         <thead>
           <tr>
             <th>Date</th>
@@ -126,7 +130,7 @@
 
       dashboardData = res;
 
-      // Populate office select dropdown if not already initialized
+      // Populate dropdown
       const filterSelect = document.getElementById("officeFilterSelect");
       if (filterSelect.options.length <= 1 && res.allowedOffices && res.allowedOffices.length > 0) {
         filterSelect.innerHTML = '<option value="All">All Offices</option>';
@@ -143,7 +147,7 @@
 
     function filterByLevel(level) {
       currentLevelFilter = level;
-      document.querySelectorAll(".dash-pill").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".dash-pill-btn").forEach(p => p.classList.remove("active"));
       event.target.classList.add("active");
       renderDashboard();
     }
@@ -163,7 +167,6 @@
       document.getElementById("statTotalResponses").textContent = dashboardData.totalCount || 0;
       document.getElementById("statAvgRating").textContent = dashboardData.avgRating ? dashboardData.avgRating.toFixed(1) : "0.0";
 
-      // Filter Office Breakdown cards based on selected pill level
       const grid = document.getElementById("officeCardsGrid");
       let breakdown = dashboardData.officeBreakdown || [];
 
@@ -182,24 +185,23 @@
           const stars = renderStars(o.avgRating);
           const badge = o.avgRating >= 4.8 ? ' 🥇' : (o.avgRating >= 4.5 ? ' 🥈' : '');
           return `
-            <div class="office-card-bubbly">
+            <div class="office-stat-card">
               <div>
-                <div class="office-card-title">
+                <div class="office-card-header">
                   <span>${escapeHtml(o.office)}${badge}</span>
                 </div>
-                <div class="office-card-score">
-                  <div class="score-num">${o.avgRating}<span>/5</span></div>
-                  <div class="score-responses">${o.count} response${o.count === 1 ? '' : 's'}</div>
+                <div class="office-score-row">
+                  <div class="score-text">${o.avgRating}<span>/5</span></div>
+                  <div class="response-count">${o.count} response${o.count === 1 ? '' : 's'}</div>
                 </div>
-                <div class="office-card-stars">${stars}</div>
+                <div class="star-rating-display">${stars}</div>
               </div>
-              <div class="office-card-bar"></div>
+              <div class="card-bottom-bar"></div>
             </div>
           `;
         }).join("");
       }
 
-      // Recent Submissions Table
       const recentBody = document.getElementById("recentTableBody");
       const recent = dashboardData.recent || [];
 
@@ -232,7 +234,6 @@
       return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
-    // Initial load
     loadDashboardData();
   </script>
 </body>

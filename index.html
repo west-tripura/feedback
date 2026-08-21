@@ -10,21 +10,23 @@
 
   <!-- Header Banner -->
   <header class="header-banner">
-    <div class="emblem-wrapper">
+    <a href="index.html" class="home-nav-link">🏠 Home</a>
+    
+    <div class="emblem-icon">
       <span>🏛️</span>
     </div>
     <h1>DM & Collector, West Tripura</h1>
     <p>Citizen Feedback Portal</p>
   </header>
 
-  <!-- Main Content -->
-  <div class="main-container form-wrapper">
-    <div class="bubbly-card">
-      <div class="card-header-flex">
-        <div class="card-title-badge">
+  <!-- Main Container -->
+  <div class="main-wrapper form-wrapper">
+    <div class="card">
+      <div class="card-top-bar">
+        <div class="card-badge-title">
           <span>📋</span> FEEDBACK FORM
         </div>
-        <a href="login.html" class="btn btn-outline-gold btn-sm">
+        <a href="login.html" class="btn btn-outline-gold">
           <span>🔑</span> Dashboard Login
         </a>
       </div>
@@ -35,17 +37,17 @@
       <div id="formSection">
         
         <!-- Step 1: Office Selection -->
-        <div class="step-group">
-          <div class="step-label">
-            <span class="step-num">1</span>
+        <div class="step-item">
+          <div class="step-header">
+            <span class="step-circle">1</span>
             <span>Office Selection</span>
-            <span class="req-star">*</span>
+            <span class="required">*</span>
           </div>
           
-          <div class="pill-group">
-            <button type="button" class="pill-btn" id="pill-DM" onclick="selectOfficeType('DM')">DM Office</button>
-            <button type="button" class="pill-btn" id="pill-SDM" onclick="selectOfficeType('SDM')">SDM Office</button>
-            <button type="button" class="pill-btn" id="pill-BDO" onclick="selectOfficeType('BDO')">BDO Office</button>
+          <div class="pill-options">
+            <button type="button" class="pill-option-btn" id="pill-DM" onclick="selectOfficeType('DM')">DM Office</button>
+            <button type="button" class="pill-option-btn" id="pill-SDM" onclick="selectOfficeType('SDM')">SDM Office</button>
+            <button type="button" class="pill-option-btn" id="pill-BDO" onclick="selectOfficeType('BDO')">BDO Office</button>
           </div>
 
           <select id="officeSelect" disabled>
@@ -54,14 +56,14 @@
         </div>
 
         <!-- Step 2: Experience Rating -->
-        <div class="step-group">
-          <div class="step-label">
-            <span class="step-num">2</span>
+        <div class="step-item">
+          <div class="step-header">
+            <span class="step-circle">2</span>
             <span>Your Experience Rating</span>
-            <span class="req-star">*</span>
+            <span class="required">*</span>
           </div>
 
-          <div class="star-rating-box">
+          <div class="stars-container">
             <div class="stars-row" id="starContainer">
               <span onclick="setRating(1)">★</span>
               <span onclick="setRating(2)">★</span>
@@ -69,39 +71,39 @@
               <span onclick="setRating(4)">★</span>
               <span onclick="setRating(5)">★</span>
             </div>
-            <div class="rating-text" id="ratingLabel">Tap a star to rate</div>
+            <div class="rating-caption" id="ratingLabel">Tap a star to rate</div>
           </div>
         </div>
 
         <!-- Step 3: Feedback Remarks -->
-        <div class="step-group">
-          <div class="step-label">
-            <span class="step-num">3</span>
+        <div class="step-item">
+          <div class="step-header">
+            <span class="step-circle">3</span>
             <span>Feedback / Suggestions (Optional)</span>
           </div>
           <textarea id="feedbackText" rows="3" placeholder="Share your experience or suggestion..."></textarea>
         </div>
 
         <!-- Step 4: Mobile Number -->
-        <div class="step-group">
-          <div class="step-label">
-            <span class="step-num">4</span>
+        <div class="step-item">
+          <div class="step-header">
+            <span class="step-circle">4</span>
             <span>Mobile Number (Optional)</span>
           </div>
           <input type="tel" id="mobile" maxlength="10" placeholder="10-digit mobile number" />
         </div>
 
-        <button type="button" id="submitBtn" onclick="submitFeedback()" class="btn" style="margin-top: 10px;">Submit Feedback</button>
+        <button type="button" id="submitBtn" onclick="submitFeedback()" class="btn btn-gold btn-full" style="margin-top: 10px;">Submit Feedback</button>
       </div>
 
       <!-- Success Screen -->
       <div id="successSection" class="hidden" style="text-align: center; padding: 25px 10px;">
-        <div style="font-size: 4rem; color: #10b981; margin-bottom: 15px;">✓</div>
-        <h2 style="font-family: var(--font-serif); color: var(--primary-navy); margin-bottom: 10px;">Feedback Submitted!</h2>
+        <div style="font-size: 3.5rem; color: #10b981; margin-bottom: 12px;">✓</div>
+        <h2 style="font-family: 'Playfair Display', serif; color: var(--navy); margin-bottom: 10px;">Feedback Submitted!</h2>
         <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">
-          Thank you for taking the time to share your feedback. Your submission has been securely recorded for continuous service improvement.
+          Thank you for taking the time to share your feedback. Your response has been securely recorded.
         </p>
-        <button class="btn btn-navy" onclick="resetForm()">Submit Another Feedback</button>
+        <button class="btn btn-navy" onclick="resetForm()">Submit Another Response</button>
       </div>
 
     </div>
@@ -131,7 +133,7 @@
 
     function selectOfficeType(type) {
       selectedOfficeType = type;
-      document.querySelectorAll(".pill-btn").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".pill-option-btn").forEach(p => p.classList.remove("active"));
       document.getElementById("pill-" + type).classList.add("active");
 
       const oSelect = document.getElementById("officeSelect");
@@ -217,7 +219,7 @@
     function resetForm() {
       selectedOfficeType = "";
       selectedRating = 0;
-      document.querySelectorAll(".pill-btn").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".pill-option-btn").forEach(p => p.classList.remove("active"));
       document.getElementById("officeSelect").innerHTML = '<option value="">-- Select Office Level above --</option>';
       document.getElementById("officeSelect").disabled = true;
       setRating(0);
