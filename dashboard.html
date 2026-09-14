@@ -72,8 +72,9 @@
     </div>
 
     <!-- Recent Submissions Table -->
-    <div style="margin: 35px 0 15px;">
+    <div style="margin: 35px 0 15px; display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:10px;">
       <h2 class="section-title">Recent Submissions</h2>
+      <div id="recentCountLabel" style="color: var(--text-muted); font-size: 0.85rem;"></div>
     </div>
 
     <div class="data-table-container">
@@ -92,6 +93,9 @@
       </table>
     </div>
 
+    <!-- Pagination Controls -->
+    <div class="pagination-bar" id="paginationBar"></div>
+
   </div>
 
   <footer class="footer">
@@ -108,6 +112,10 @@
     let userOffice = localStorage.getItem("feedback_office") || "DM Office";
 
     let currentLevelFilter = userRole === "BDO" ? "BDO" : (userRole === "SDM" ? "SDM" : "DM");
+
+    // Pagination state for the "Recent Submissions" table
+    const RECENT_PAGE_SIZE = 10;
+    let currentRecentPage = 1;
 
     const REGION_MAP = {
       "SDM Office - Sadar": {
@@ -163,6 +171,7 @@
       btn.classList.add("active");
 
       populateDropdownByLevel(level);
+      currentRecentPage = 1;
       loadDashboardData();
     }
 
@@ -255,15 +264,23 @@
     }
 
     function onOfficeSelectChange() {
+      currentRecentPage = 1;
       loadDashboardData();
     }
 
-    async function loadDashboardData() {
+    async function loadDashboardData(page) {
       const alertBox = document.getElementById("alertBox");
       alertBox.style.display = "none";
 
+      if (page) currentRecentPage = page;
+
       const selectedOffice = document.getElementById("officeFilterSelect").value || "All";
-      const res = await apiPost("getDashboardData", { token, officeFilter: selectedOffice });
+      const res = await apiPost("getDashboardData", {
+        token,
+        officeFilter: selectedOffice,
+        page: currentRecentPage,
+        pageSize: RECENT_PAGE_SIZE
+      });
 
       if (!res.success) {
         if (res.error && res.error.includes("Unauthorized")) {
@@ -279,6 +296,7 @@
       dashboardData = res;
       if (res.role) userRole = res.role;
       if (res.ownOffice) userOffice = res.ownOffice;
+      if (res.recentPage) currentRecentPage = res.recentPage;
 
       renderDashboard();
     }
@@ -352,6 +370,60 @@
           </tr>
         `).join("");
       }
+
+      renderRecentCountLabel();
+      renderPagination();
+    }
+
+    function renderRecentCountLabel() {
+      const label = document.getElementById("recentCountLabel");
+      const total = dashboardData.recentTotalCount || 0;
+      if (total === 0) {
+        label.textContent = "";
+        return;
+      }
+      const pageSize = dashboardData.recentPageSize || RECENT_PAGE_SIZE;
+      const page = dashboardData.recentPage || 1;
+      const startNum = (page - 1) * pageSize + 1;
+      const endNum = Math.min(page * pageSize, total);
+      label.textContent = `Showing ${startNum}–${endNum} of ${total}`;
+    }
+
+    function renderPagination() {
+      const bar = document.getElementById("paginationBar");
+      const totalPages = dashboardData.recentTotalPages || 1;
+      const page = dashboardData.recentPage || 1;
+
+      if (totalPages <= 1) {
+        bar.innerHTML = "";
+        return;
+      }
+
+      let html = "";
+      html += `<button class="page-btn" ${page <= 1 ? "disabled" : ""} onclick="loadDashboardData(${page - 1})">‹ Prev</button>`;
+
+      const maxButtons = 5;
+      let startPage = Math.max(1, page - Math.floor(maxButtons / 2));
+      let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+      startPage = Math.max(1, endPage - maxButtons + 1);
+
+      if (startPage > 1) {
+        html += `<button class="page-btn" onclick="loadDashboardData(1)">1</button>`;
+        if (startPage > 2) html += `<span class="page-ellipsis">…</span>`;
+      }
+
+      for (let p = startPage; p <= endPage; p++) {
+        html += `<button class="page-btn ${p === page ? "active" : ""}" onclick="loadDashboardData(${p})">${p}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) html += `<span class="page-ellipsis">…</span>`;
+        html += `<button class="page-btn" onclick="loadDashboardData(${totalPages})">${totalPages}</button>`;
+      }
+
+      html += `<button class="page-btn" ${page >= totalPages ? "disabled" : ""} onclick="loadDashboardData(${page + 1})">Next ›</button>`;
+
+      bar.innerHTML = html;
     }
 
     function renderStars(rating) {
