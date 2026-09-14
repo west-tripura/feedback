@@ -730,7 +730,7 @@ select:disabled {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 .data-table th {
@@ -761,7 +761,6 @@ select:disabled {
 .data-table th:nth-child(2),
 .data-table th:nth-child(3) {
   white-space: nowrap;
-  width: 1%;
 }
 
 /* Feedback column wraps onto multiple lines instead of truncating */
@@ -771,7 +770,7 @@ select:disabled {
   word-break: break-word;
   overflow-wrap: break-word;
   line-height: 1.55;
-  min-width: 260px;
+  width: 100%;
 }
 
 .data-table tr:last-child td {
